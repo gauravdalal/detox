@@ -6,11 +6,11 @@ class MockElement {
     this.longPressed = false;
     this.tappedTimes = null;
     this.text = '';
-    this.scroll = {
+    this.scrolled = {
       direction: '',
       distance: 0,
     };
-    this.swipe = {
+    this.swiped = {
       direction: '',
       speed: '',
       percentage: 0,
@@ -42,15 +42,15 @@ class MockElement {
   }
 
   scroll(distance, direction) {
-    this.scroll = {direction, distance};
+    this.scrolled = {direction, distance};
   }
 
   scrollTo(edge) {
-    this.scroll = {direction: edge};
+    this.scrolled = {direction: edge};
   }
 
   swipe(direction, speed, percentage) {
-    this.swipe = {direction, speed, percentage};
+    this.swiped = {direction, speed, percentage};
   }
 }
 
@@ -254,6 +254,87 @@ describe('testFlow actions', () => {
 
       expect(element).toBe(contextEl);
       expect(contextEl.text).toBe('');
+    });
+  });
+
+  describe('scroll', () => {
+    it('scrolls the element from previous step', () => {
+      const el = new MockElement();
+      const context = new MockContext();
+      const distance = 10;
+      const direction = 'up';
+
+      const element = actions.scroll(distance, direction)(el, context);
+
+      expect(element).toBe(el);
+      expect(el.scrolled).toEqual({distance, direction});
+    });
+
+    it('scrolls the element found by matcher', () => {
+      const matcher = {byId: 'test'};
+      const contextEl = new MockElement();
+      const context = new MockContext(matcher, contextEl);
+      const distance = 10;
+      const direction = 'up';
+
+      const element = actions.scroll(distance, direction, matcher)({}, context);
+
+      expect(element).toBe(contextEl);
+      expect(contextEl.scrolled).toEqual({distance, direction});
+    });
+  });
+
+  describe('scrollTo', () => {
+    it('scrolls to the edge the element from previous step', () => {
+      const el = new MockElement();
+      const context = new MockContext();
+      const direction = 'top';
+
+      const element = actions.scrollTo(direction)(el, context);
+
+      expect(element).toBe(el);
+      expect(el.scrolled).toEqual({direction});
+    });
+
+    it('scrolls to the edge the element found by matcher', () => {
+      const matcher = {byId: 'test'};
+      const contextEl = new MockElement();
+      const context = new MockContext(matcher, contextEl);
+      const direction = 'top';
+
+      const element = actions.scrollTo(direction, matcher)({}, context);
+
+      expect(element).toBe(contextEl);
+      expect(contextEl.scrolled).toEqual({direction});
+    });
+  });
+
+  describe('swipe', () => {
+    it('swipes the element from previous step', () => {
+      const el = new MockElement();
+      const context = new MockContext();
+      const direction = 'up';
+      const speed = 'fast';
+      const percentage = 0.5;
+
+      const element = actions.swipe(direction, speed, percentage)(el, context);
+
+      expect(element).toBe(el);
+      expect(el.swiped).toEqual({direction, speed, percentage});
+    });
+
+    it('swipes the element found by matcher', () => {
+      const matcher = {byId: 'test'};
+      const contextEl = new MockElement();
+      const context = new MockContext(matcher, contextEl);
+      const direction = 'up';
+      const speed = 'fast';
+      const percentage = 0.5;
+
+      const element = actions.swipe(direction, speed, percentage, matcher)({}, context);
+
+      expect(element).toBe(contextEl);
+      expect(contextEl.swiped).toEqual({direction, speed, percentage});
     });
   });
 });

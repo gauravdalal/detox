@@ -20,14 +20,8 @@ const multiTap = action((el, times) => el.multiTap(times));
 const typeText = action((el, text) => el.typeText(text));
 const replaceText = action((el, text) => el.replaceText(text));
 const clearText = action(el => el.clearText());
-
-const scroll = (distance, direction, matcher) => (prevRes, context) =>
-  findElement(matcher, prevRes, context).scroll(distance, direction);
-const scrollTo = (edge, matcher) => (prevRes, context) =>
-  findElement(matcher, prevRes, context).scrollTo(edge);
-// const swipe = (direction, speed, percentage, matcher) => (prevRes, context) =>
-//   findElement(matcher, prevRes, context).swipe(direction, speed, percentage);
-
+const scroll = action((el, distance, direction) => el.scroll(distance, direction));
+const scrollTo = action((el, edge) => el.scrollTo(edge));
 const swipe = action((el, direction, speed, percentage) => el.swipe(direction, speed, percentage));
 
 module.exports = {
