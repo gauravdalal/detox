@@ -1,22 +1,25 @@
-import {findElement} from './actions';
+const findElement = require('./actions').findElement;
 
+function expect(func) {
+  return (...args) => (prevRes, context) => {
+    const matcher = args[func.length - 2];
+    const el = findElement(matcher, prevRes, context);
 
-const isVisible = matcher => (prevRes, context) =>
-  context.expect(findElement(matcher, prevRes, context)).toBeVisible();
-const isNotVisible = matcher => (prevRes, context) =>
-  context.expect(findElement(matcher, prevRes, context)).toBeNotVisible();
-const doesExist = matcher => (prevRes, context) =>
-  context.expect(findElement(matcher, prevRes, context)).toExist();
-const doesNotExist = matcher => (prevRes, context) =>
-  context.expect(findElement(matcher, prevRes, context)).toNotExist();
-const hasText = (text, matcher) => (prevRes, context) =>
-  context.expect(findElement(matcher, prevRes, context)).toHaveText(text);
-const hasId = (id, matcher) => (prevRes, context) =>
-  context.expect(findElement(matcher, prevRes, context)).toHaveId(id);
-const hasValue = (value, matcher) => (prevRes, context) =>
-  context.expect(findElement(matcher, prevRes, context)).toHaveValue(value);
+    func(context, el, ...args);
 
-export {
+    return el;
+  }
+}
+
+const isVisible = expect((context, el) => context.expect(el).toBeVisible());
+const isNotVisible = expect((context, el) => context.expect(el).toBeNotVisible());
+const doesExist = expect((context, el) => context.expect(el).toExist());
+const doesNotExist = expect((context, el) => context.expect(el).toNotExist());
+const hasText = expect((context, el, text) => context.expect(el).toHaveText(text));
+const hasId = expect((context, el, id) => context.expect(el).toHaveId(id));
+const hasValue = expect((context, el, value) => context.expect(el).toHaveValue(value));
+
+module.exports = {
   isVisible,
   isNotVisible,
   doesExist,
@@ -24,4 +27,4 @@ export {
   hasText,
   hasId,
   hasValue,
-}
+};
