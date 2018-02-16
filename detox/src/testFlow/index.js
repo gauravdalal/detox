@@ -1,12 +1,13 @@
-const exportWrapper = require('./exportWrapper');
+function testFlow(...commands) {
+  return async (...args) => {
+    const context = args.length === 1 ? args[0] : args[1];
+    let prevRes = args.length > 1 ? args[0] : undefined;
 
-export default (...commands) => async (prevRes = undefined, context) => {
-  context = context || {
-    element: exportWrapper.element,
-    expect: exportWrapper.expect,
-    device: exportWrapper.device
-  };
+    for (let command of commands)
+      prevRes = await command(prevRes, context);
 
-  for (let command of commands)
-    prevRes = await command(prevRes, context);
-};
+    return prevRes;
+  }
+}
+
+module.exports = testFlow;
